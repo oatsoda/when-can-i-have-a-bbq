@@ -69,11 +69,6 @@ function App() {
   /*******************************************************/
   /* CALCULATE RESULTS */
 
-  const millisecondsInHours = 60 * 60 * 1000;
-  function hoursBetween(start: Date, end: Date): number {
-    return (end.valueOf() - start.valueOf()) / millisecondsInHours;
-  }
-
   const calculateResults = useCallback(
     (weatherResponse: WeatherResponse) => {
       async function convertWeatherToResults() {
@@ -85,6 +80,11 @@ function App() {
         if (totalHours === 0) {
           setResults([]);
           return;
+        }
+
+        const millisecondsInHours = 60 * 60 * 1000;
+        function hoursBetween(start: Date, end: Date): number {
+          return (end.valueOf() - start.valueOf()) / millisecondsInHours;
         }
 
         // 1. Remove any unsuitable weather
@@ -231,7 +231,7 @@ function App() {
 
       void convertWeatherToResults();
     },
-    [setResults, hoursBetween]
+    [setResults]
   );
 
   /*******************************************************/
