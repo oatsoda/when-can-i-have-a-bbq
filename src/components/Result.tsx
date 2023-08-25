@@ -34,8 +34,10 @@ export function Result({ suitableTime }: { suitableTime: SuitableTime }) {
       <p>
         Weather: <i className={weatherIndicator()}></i>
       </p>
-      <p>Avg % Precip: {suitableTime.avg_precipitation_probability}</p>
-      <p>Avg fraction cloudcover: {suitableTime.avg_cloudcover}</p>
+      <p>
+        Precipitation: {Math.round(suitableTime.avg_precipitation_probability)}%
+      </p>
+      <p>Cloudcover: {Math.round(suitableTime.avg_cloudcover)}%</p>
       <p>Max UV: {suitableTime.max_uv_index}</p>
     </div>
   );
