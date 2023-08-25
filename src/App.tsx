@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import "./App.css";
 
 type WeatherResponse = {
   hourly_units: {
@@ -279,25 +278,35 @@ function App() {
 
   const displayInputs = useMemo(() => {
     return (
-      <>
+      <div className="m-auto p-8 rounded grid grid-cols-1 text-center bg-slate-50">
         {resultError && <p>Error: {resultError}</p>}
         {navigator.geolocation && (
           <>
-            <p>
-              <button onClick={locationClick}>Use Location</button>
-            </p>
-            {geolocationPositionError && (
-              <p>Error: {geolocationPositionError.message}</p>
-            )}
-            <p>or</p>
+            <div>
+              <button
+                className="rounded bg-sky-500 px-6 py-2 text-slate-50"
+                onClick={locationClick}
+              >
+                Use current location
+              </button>
+              {geolocationPositionError && (
+                <p>Error: {geolocationPositionError.message}</p>
+              )}
+            </div>
+            <div className="my-3">Or</div>
           </>
         )}
-        <p>Enter location</p>
-        <p>
-          <input type="text"></input>
-          <button>Go</button>
-        </p>
-      </>
+        <div>
+          Enter location
+          <input
+            type="text"
+            className="rounded border-2 px-3 py-2 mx-2 my-0"
+          ></input>
+          <button className="rounded bg-sky-500 px-6 py-2 text-slate-50">
+            Go
+          </button>
+        </div>
+      </div>
     );
   }, [geolocationPositionError, locationClick, resultError]);
 
@@ -329,8 +338,14 @@ function App() {
   /*******************************************************/
   /* RENDER */
   return (
-    <div className="App">
-      {(geolocationPosition && !resultError && displayResults) || displayInputs}
+    <div className="flex h-screen flex-col">
+      <div className="bg-slate-50 text-2xl antialiased px-3 py-1 italic">
+        When can I have a BBQ?
+      </div>
+      <div className="flex h-screen bg-slate-600">
+        {(geolocationPosition && !resultError && displayResults) ||
+          displayInputs}
+      </div>
     </div>
   );
 }
