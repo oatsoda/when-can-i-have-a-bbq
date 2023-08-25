@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { Result } from "./components/Result";
 
 type WeatherResponse = {
   hourly_units: {
@@ -32,7 +33,7 @@ type TimeGroup = {
   dataIndexes: number[];
 };
 
-type SuitableTime = {
+export type SuitableTime = {
   timeFrom: Date;
   timeTo: Date;
   hours: number;
@@ -137,8 +138,11 @@ function App() {
         // 2. Group suitable times into contiguous periods
 
         function addSuitableTime(group: TimeGroup) {
+          // The forecast time is for the "previous hour"
+          const from = group.timeFrom;
+          from.setTime(from.getTime() - millisecondsInHours);
           const suitableTime: SuitableTime = {
-            timeFrom: group.timeFrom,
+            timeFrom: from,
             timeTo: group.timeTo,
             hours: group.dataIndexes.length,
             perfect: false,
@@ -164,7 +168,9 @@ function App() {
           suitableTime.avg_cloudcover /= suitableTime.hours;
           suitableTime.avg_weathercode /= suitableTime.hours;
 
-          suitableTime.perfect = suitableTime.avg_weathercode === 0;
+          suitableTime.perfect =
+            suitableTime.avg_weathercode === 0 &&
+            suitableTime.avg_temperature_2m >= 20;
 
           suitableTimes.push(suitableTime);
         }
@@ -220,7 +226,6 @@ function App() {
 
         /*
           TODO
-          Find contiguous periods of suitable. 
           Filter our cooler temperatures if there are better ones (i.e. only LOW scores)
           Warn on high UV Index
          */
@@ -278,33 +283,35 @@ function App() {
 
   const displayInputs = useMemo(() => {
     return (
-      <div className="m-auto p-8 rounded grid grid-cols-1 text-center bg-slate-50">
-        {resultError && <p>Error: {resultError}</p>}
-        {navigator.geolocation && (
-          <>
-            <div>
-              <button
-                className="rounded bg-sky-500 px-6 py-2 text-slate-50"
-                onClick={locationClick}
-              >
-                Use current location
-              </button>
-              {geolocationPositionError && (
-                <p>Error: {geolocationPositionError.message}</p>
-              )}
-            </div>
-            <div className="my-3">Or</div>
-          </>
-        )}
-        <div>
-          Enter location
-          <input
-            type="text"
-            className="rounded border-2 px-3 py-2 mx-2 my-0"
-          ></input>
-          <button className="rounded bg-sky-500 px-6 py-2 text-slate-50">
-            Go
-          </button>
+      <div className="flex h-screen">
+        <div className="m-auto p-8 rounded grid grid-cols-1 text-center bg-slate-50">
+          {resultError && <p>Error: {resultError}</p>}
+          {navigator.geolocation && (
+            <>
+              <div>
+                <button
+                  className="rounded bg-sky-500 px-6 py-2 text-slate-50"
+                  onClick={locationClick}
+                >
+                  Use current location
+                </button>
+                {geolocationPositionError && (
+                  <p>Error: {geolocationPositionError.message}</p>
+                )}
+              </div>
+              <div className="my-3">Or</div>
+            </>
+          )}
+          <div>
+            Enter location
+            <input
+              type="text"
+              className="rounded border-2 px-3 py-2 mx-2 my-0"
+            ></input>
+            <button className="rounded bg-sky-500 px-6 py-2 text-slate-50">
+              Go
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -313,25 +320,15 @@ function App() {
   /*******************************************************/
   /* DISPLAY RESULTS */
 
-  // TODO: Local timezone
   const displayResults = useMemo(() => {
     return (
-      <>
-        {results?.map((r, i) => (
-          <div key={i}>
-            <p>
-              From {r.timeFrom.toString()} to {r.timeTo.toString()} [{r.hours}{" "}
-              hours]
-            </p>
-            <p>Perfect? {r.perfect.toString()}</p>
-            <p>Avg Temp: {r.avg_temperature_2m}</p>
-            <p>Avg % Precip: {r.avg_precipitation_probability}</p>
-            <p>Avg fraction cloudcover: {r.avg_cloudcover}</p>
-            <p>Avg weathercode: {r.avg_weathercode}</p>
-            <p>Max UV: {r.max_uv_index}</p>
-          </div>
-        ))}
-      </>
+      <div className="flex-1">
+        <div className="flex flex-col mx-auto md:w-3/4 gap-y-4 my-4">
+          {results?.map((r, i) => (
+            <Result suitableTime={r} key={i} />
+          ))}
+        </div>
+      </div>
     );
   }, [results]);
 
@@ -339,13 +336,13 @@ function App() {
   /* RENDER */
   return (
     <div className="flex h-screen flex-col">
-      <div className="bg-slate-50 text-2xl antialiased px-3 py-1 italic">
-        When can I have a BBQ?
+      <div className="bg-slate-50 px-3 py-1 antialiased">
+        <h1>
+          <i className="fa-solid fa-utensils"></i>{" "}
+          <i className="fa-solid fa-burger"></i> When can I have a BBQ?
+        </h1>
       </div>
-      <div className="flex h-screen bg-slate-600">
-        {(geolocationPosition && !resultError && displayResults) ||
-          displayInputs}
-      </div>
+      {(geolocationPosition && !resultError && displayResults) || displayInputs}
     </div>
   );
 }

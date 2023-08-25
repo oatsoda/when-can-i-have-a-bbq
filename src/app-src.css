@@ -1,3 +1,16 @@
 @tailwind base;
+
+@layer base {
+  h1 {
+    @apply text-2xl;
+  }
+  h2 {
+    @apply text-xl;
+  }
+  body {
+    @apply bg-slate-600;
+  }
+}
+
 @tailwind components;
 @tailwind utilities;
