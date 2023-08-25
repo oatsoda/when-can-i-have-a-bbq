@@ -66,7 +66,14 @@ function App() {
       setGeolocationPosition,
       setGeolocationPositionError
     );
-  }, [setGeolocationPosition]);
+  }, []);
+
+  const resetClick = useCallback(() => {
+    setGeolocationPosition(undefined);
+    setGeolocationPositionError(undefined);
+    setResultError(undefined);
+    setResults(undefined);
+  }, []);
 
   /*******************************************************/
   /* CALCULATE RESULTS */
@@ -190,16 +197,13 @@ function App() {
             };
           } else {
             var time = new Date(data.time[hour] + "Z");
-            console.log(
-              "CHECK",
-              hour,
-              data.time[hour],
-              time,
-              currentGroup.timeTo
-            );
+            // If contiguous hours has ended
             if (hoursBetween(currentGroup.timeTo, time) > 1) {
-              console.log("GROUPED", currentGroup);
-              addSuitableTime(currentGroup);
+              // Ignore single hours
+              if (currentGroup.dataIndexes.length > 1) {
+                addSuitableTime(currentGroup);
+              }
+
               currentGroup = {
                 timeFrom: new Date(data.time[hour] + "Z"),
                 timeTo: new Date(data.time[hour] + "Z"),
@@ -310,7 +314,10 @@ function App() {
               type="text"
               className="rounded border-2 px-3 py-2 mx-2 my-0"
             ></input>
-            <button className="rounded bg-sky-500 px-6 py-2 text-slate-50">
+            <button
+              className="rounded bg-sky-500 px-6 py-2 text-slate-50"
+              disabled
+            >
               Go
             </button>
           </div>
@@ -339,7 +346,7 @@ function App() {
   return (
     <div className="flex h-screen flex-col">
       <div className="bg-slate-50 px-3 py-1 antialiased">
-        <h1>
+        <h1 className="cursor-pointer" onClick={resetClick}>
           <i className="fa-solid fa-utensils"></i>{" "}
           <i className="fa-solid fa-burger"></i> When can I have a BBQ?
         </h1>
