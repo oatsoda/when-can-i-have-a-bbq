@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Result } from "./components/Result";
 
+// https://open-meteo.com/en/docs?#latitude=51.1438656&longitude=-0.9911955&hourly=temperature_2m,precipitation_probability,precipitation,cloudcover,cloudcover_low,cloudcover_mid,cloudcover_high,uv_index,is_day,weathercode&windspeed_unit=mph&forecast_days=14
+
 type WeatherResponse = {
   hourly_units: {
     time: string;
