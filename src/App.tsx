@@ -1,5 +1,6 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Result } from "./components/Result";
+import { LocationTypeahead } from "./components/LocationTypeahead";
 
 // https://open-meteo.com/en/docs?#latitude=51.1438656&longitude=-0.9911955&hourly=temperature_2m,precipitation_probability,precipitation,cloudcover,cloudcover_low,cloudcover_mid,cloudcover_high,uv_index,is_day,weathercode&windspeed_unit=mph&forecast_days=14
 
@@ -47,9 +48,14 @@ export type SuitableTime = {
   max_uv_index: number;
 };
 
+export type Location = {
+  latitude: number;
+  longitude: number;
+};
+
 function App() {
   const [geolocationPosition, setGeolocationPosition] = useState<
-    GeolocationPosition | undefined
+    Location | undefined
   >(undefined);
   const [geolocationPositionError, setGeolocationPositionError] = useState<
     GeolocationPositionError | undefined
@@ -63,7 +69,11 @@ function App() {
     setGeolocationPosition(undefined);
     setGeolocationPositionError(undefined);
     navigator.geolocation.getCurrentPosition(
-      setGeolocationPosition,
+      (p) =>
+        setGeolocationPosition({
+          latitude: p.coords.latitude,
+          longitude: p.coords.longitude,
+        }),
       setGeolocationPositionError
     );
   }, []);
@@ -255,7 +265,7 @@ function App() {
     async function getWeather() {
       try {
         const response = await fetch(
-          `https://api.open-meteo.com/v1/forecast?latitude=${geolocationPosition?.coords.latitude}&longitude=${geolocationPosition?.coords.longitude}&hourly=temperature_2m,precipitation_probability,precipitation,cloudcover,cloudcover_low,cloudcover_mid,cloudcover_high,uv_index,is_day,weathercode&windspeed_unit=mph&timezone=GMT&forecast_days=14`
+          `https://api.open-meteo.com/v1/forecast?latitude=${geolocationPosition?.latitude}&longitude=${geolocationPosition?.longitude}&hourly=temperature_2m,precipitation_probability,precipitation,cloudcover,cloudcover_low,cloudcover_mid,cloudcover_high,uv_index,is_day,weathercode&windspeed_unit=mph&timezone=GMT&forecast_days=14`
         );
 
         const data: WeatherResponse | WeatherError | undefined =
@@ -290,7 +300,7 @@ function App() {
   const displayInputs = useMemo(() => {
     return (
       <div className="flex h-screen">
-        <div className="m-auto p-8 rounded grid grid-cols-1 text-center bg-slate-50">
+        <div className="m-auto p-8 rounded grid grid-cols-1 gap-2 text-center bg-slate-50 w-3/4 md:w-96">
           {resultError && <p>Error: {resultError}</p>}
           {navigator.geolocation && (
             <>
@@ -299,27 +309,17 @@ function App() {
                   className="rounded bg-sky-500 px-6 py-2 text-slate-50"
                   onClick={locationClick}
                 >
-                  Use current location
+                  Use Current Location
                 </button>
                 {geolocationPositionError && (
                   <p>Error: {geolocationPositionError.message}</p>
                 )}
               </div>
-              <div className="my-3">Or</div>
             </>
           )}
+          {navigator.geolocation && <div className="">Or</div>}
           <div>
-            Enter location
-            <input
-              type="text"
-              className="rounded border-2 px-3 py-2 mx-2 my-0"
-            ></input>
-            <button
-              className="rounded bg-sky-500 px-6 py-2 text-slate-50"
-              disabled
-            >
-              Go
-            </button>
+            <LocationTypeahead onLocationChosen={setGeolocationPosition} />
           </div>
         </div>
       </div>
