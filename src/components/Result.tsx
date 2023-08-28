@@ -18,7 +18,7 @@ export function Result({ suitableTime }: { suitableTime: SuitableTime }) {
   }, [suitableTime.avg_weathercode]);
 
   return (
-    <div className="flex flex-col rounded bg-slate-50 px-3 py-2 gap-2">
+    <div className="flex flex-col rounded bg-orange-200 px-3 py-2 gap-2">
       <div>
         <h2>
           {suitableTime.perfect && <i className="fa-solid fa-star mr-2"></i>}

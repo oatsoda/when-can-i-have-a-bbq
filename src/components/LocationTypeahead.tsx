@@ -110,7 +110,7 @@ export function LocationTypeahead({
         <div className="flex-none">
           <button
             disabled={!selectedLocation}
-            className="rounded bg-sky-500 px-6 py-2 ml-2 text-slate-50 border-2 border-sky-500"
+            className="rounded bg-orange-400 px-6 py-2 ml-2 text-slate-50 border-2 border-orange-400 disabled:opacity-50"
             onClick={onButtonClick}
           >
             Go

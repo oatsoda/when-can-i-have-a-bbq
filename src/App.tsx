@@ -306,7 +306,7 @@ function App() {
             <>
               <div>
                 <button
-                  className="rounded bg-sky-500 px-6 py-2 text-slate-50"
+                  className="rounded bg-orange-400 px-6 py-3 text-slate-50"
                   onClick={locationClick}
                 >
                   Use Current Location
@@ -317,7 +317,7 @@ function App() {
               </div>
             </>
           )}
-          {navigator.geolocation && <div className="">Or</div>}
+          {navigator.geolocation && <div className="">or</div>}
           <div>
             <LocationTypeahead onLocationChosen={setGeolocationPosition} />
           </div>
@@ -332,10 +332,16 @@ function App() {
   const displayResults = useMemo(() => {
     return (
       <div className="flex-1">
-        <div className="flex flex-col mx-auto md:w-3/4 gap-y-4 my-4">
+        <div className="flex flex-col mx-4 md:mx-auto md:w-3/4 gap-4 my-4">
           {results?.map((r, i) => (
             <Result suitableTime={r} key={i} />
           ))}
+          {results?.length === 0 && (
+            <div className="flex flex-col rounded bg-orange-200 px-3 py-2 gap-2">
+              Sorry, but there are no good times to have a BBQ in the next 14
+              days for your chosen location.
+            </div>
+          )}
         </div>
       </div>
     );
@@ -344,11 +350,14 @@ function App() {
   /*******************************************************/
   /* RENDER */
   return (
-    <div className="flex h-screen flex-col">
-      <div className="bg-slate-50 px-3 py-1 antialiased">
+    <div
+      className="flex h-screen flex-col bg-fixed bg-center bg-cover bg-no-repeat"
+      style={{ backgroundImage: 'url("bg.jpg")' }}
+    >
+      <div className="bg-orange-400 px-3 py-1 antialiased">
         <h1 className="cursor-pointer" onClick={resetClick}>
-          <i className="fa-solid fa-utensils"></i>{" "}
-          <i className="fa-solid fa-burger"></i> When can I have a BBQ?
+          When can I have a BBQ? <i className="fa-solid fa-utensils"></i>{" "}
+          <i className="fa-solid fa-burger"></i>
         </h1>
       </div>
       {(geolocationPosition && !resultError && displayResults) || displayInputs}
