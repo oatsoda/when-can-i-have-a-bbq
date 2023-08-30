@@ -309,7 +309,7 @@ function App() {
                   className="rounded bg-orange-400 px-6 py-3 text-slate-50"
                   onClick={locationClick}
                 >
-                  Use Current Location
+                  Use current location
                 </button>
                 {geolocationPositionError && (
                   <p>Error: {geolocationPositionError.message}</p>
@@ -350,15 +350,15 @@ function App() {
   /*******************************************************/
   /* RENDER */
   return (
-    <div
-      className="flex h-screen flex-col bg-fixed bg-center bg-cover bg-no-repeat"
-      style={{ backgroundImage: 'url("bg.jpg")' }}
-    >
-      <div className="bg-orange-400 px-3 py-1 antialiased">
-        <h1 className="cursor-pointer" onClick={resetClick}>
-          When can I have a BBQ? <i className="fa-solid fa-utensils"></i>{" "}
-          <i className="fa-solid fa-burger"></i>
-        </h1>
+    <div className="h-screen min-w-max min-h-max flex flex-col">
+      <div className="bg-orange-300 p-1 antialiased flex items-center gap-1">
+        <img
+          src="logo64.png"
+          alt=""
+          className="cursor-pointer opacity-80"
+          onClick={resetClick}
+        />
+        <h1 className="text-gray-900">When can I have a BBQ?</h1>
       </div>
       {(geolocationPosition && !resultError && displayResults) || displayInputs}
     </div>
