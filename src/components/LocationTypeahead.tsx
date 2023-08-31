@@ -14,14 +14,17 @@ type ApiLocation = {
 
 export function LocationTypeahead({
   onLocationChosen,
+  disabled,
 }: {
   onLocationChosen: (location: Location) => void;
+  disabled: boolean;
 }) {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
   const [searchText, setSearchText] = useState<string | null>(null);
   const [selectedLocation, setSelectedLocation] = useState<ApiLocation | null>(
     null
   );
-  // const [debounceTimeout, setDebounceTimeout] = useState<number | null>(null);
   const [matchingLocations, setMatchingLocations] = useState<ApiLocation[]>([]);
 
   const debounceTimeout = useRef<number | null>(null);
@@ -84,6 +87,7 @@ export function LocationTypeahead({
       console.error("Button clicked, but no selected location");
       return;
     }
+    setIsLoading(true);
     const location = selectedLocation;
     setSelectedLocation(location);
     setSearchText(null);
@@ -105,15 +109,17 @@ export function LocationTypeahead({
             placeholder={selectedLocation?.display_name ?? "Enter location"}
             value={searchText ?? ""}
             onChange={onLocationInput}
+            disabled={disabled || isLoading}
           />
         </div>
         <div className="flex-none">
           <button
-            disabled={!selectedLocation}
+            disabled={!selectedLocation || disabled || isLoading}
             className="rounded bg-orange-400 px-6 py-2 ml-2 text-slate-50 border-2 border-orange-400 disabled:opacity-50"
             onClick={onButtonClick}
           >
-            Go
+            {isLoading && <i className="fa-solid fa-circle-notch fa-spin"></i>}
+            {!isLoading && <i className="fa-solid fa-location-arrow"></i>} Go
           </button>
         </div>
       </div>

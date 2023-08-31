@@ -54,6 +54,8 @@ export type Location = {
 };
 
 function App() {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
   const [geolocationPosition, setGeolocationPosition] = useState<
     Location | undefined
   >(undefined);
@@ -66,6 +68,7 @@ function App() {
   const [results, setResults] = useState<SuitableTime[] | undefined>(undefined);
 
   const locationClick = useCallback(() => {
+    setIsLoading(true);
     setGeolocationPosition(undefined);
     setGeolocationPositionError(undefined);
     navigator.geolocation.getCurrentPosition(
@@ -74,8 +77,17 @@ function App() {
           latitude: p.coords.latitude,
           longitude: p.coords.longitude,
         }),
-      setGeolocationPositionError
+      (e) => {
+        setIsLoading(false);
+        setGeolocationPositionError(e);
+      }
     );
+  }, []);
+
+  const locationChosenClick = useCallback((location: Location) => {
+    setIsLoading(true);
+    setGeolocationPosition(location);
+    setGeolocationPositionError(undefined);
   }, []);
 
   const resetClick = useCallback(() => {
@@ -83,6 +95,7 @@ function App() {
     setGeolocationPositionError(undefined);
     setResultError(undefined);
     setResults(undefined);
+    setIsLoading(false);
   }, []);
 
   /*******************************************************/
@@ -289,6 +302,7 @@ function App() {
           `Unable to determine weather for your location: ${error}`
         );
       }
+      setIsLoading(false);
     }
 
     void getWeather();
@@ -308,7 +322,14 @@ function App() {
                 <button
                   className="rounded bg-orange-400 px-6 py-3 text-slate-50"
                   onClick={locationClick}
+                  disabled={isLoading}
                 >
+                  {isLoading && (
+                    <i className="fa-solid fa-circle-notch fa-spin"></i>
+                  )}
+                  {!isLoading && (
+                    <i className="fa-solid fa-location-crosshairs"></i>
+                  )}{" "}
                   Use current location
                 </button>
                 {geolocationPositionError && (
@@ -319,12 +340,21 @@ function App() {
           )}
           {navigator.geolocation && <div className="">or</div>}
           <div>
-            <LocationTypeahead onLocationChosen={setGeolocationPosition} />
+            <LocationTypeahead
+              onLocationChosen={locationChosenClick}
+              disabled={isLoading}
+            />
           </div>
         </div>
       </div>
     );
-  }, [geolocationPositionError, locationClick, resultError]);
+  }, [
+    geolocationPositionError,
+    isLoading,
+    locationChosenClick,
+    locationClick,
+    resultError,
+  ]);
 
   /*******************************************************/
   /* DISPLAY RESULTS */
@@ -360,7 +390,8 @@ function App() {
         />
         <h1 className="text-gray-900 font-semibold">When can I have a BBQ?</h1>
       </div>
-      {(geolocationPosition && !resultError && displayResults) || displayInputs}
+      {(geolocationPosition && !isLoading && !resultError && displayResults) ||
+        displayInputs}
     </div>
   );
 }
