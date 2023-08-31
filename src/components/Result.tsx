@@ -1,6 +1,6 @@
 import { useMemo, useRef } from "react";
-import { Settings, SuitableTime } from "../App";
 import { formatDate, formatTimes } from "../core/dateFunctions";
+import { Settings, SuitableTime } from "../weather/interpretWeather";
 
 export function Result({
   suitableTime,
