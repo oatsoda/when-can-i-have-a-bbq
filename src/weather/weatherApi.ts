@@ -38,11 +38,12 @@ export type WeatherData =
 
 export async function getWeather(
   longitude: number,
-  latitude: number
+  latitude: number,
+  forecastDays: number
 ): Promise<WeatherData> {
   try {
     const response = await fetch(
-      `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=temperature_2m,precipitation_probability,precipitation,cloudcover,cloudcover_low,cloudcover_mid,cloudcover_high,uv_index,is_day,weathercode&windspeed_unit=mph&timezone=GMT&forecast_days=14`
+      `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=temperature_2m,precipitation_probability,precipitation,cloudcover,cloudcover_low,cloudcover_mid,cloudcover_high,uv_index,is_day,weathercode&windspeed_unit=mph&timezone=GMT&forecast_days=${forecastDays}`
     );
 
     const data: WeatherResponse | WeatherError | undefined =

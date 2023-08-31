@@ -6,6 +6,7 @@ import {
 import { WeatherResponse } from "./weatherApi";
 
 export type Settings = {
+  daysAhead: 7 | 10 | 14;
   excludeNight: boolean;
   excludeInclementWeather: boolean;
   minTemperature: number;
@@ -18,6 +19,7 @@ export type Settings = {
 };
 
 export const defaultSettings: Settings = {
+  daysAhead: 14,
   excludeNight: true,
   excludeInclementWeather: true,
   minTemperature: 16,
