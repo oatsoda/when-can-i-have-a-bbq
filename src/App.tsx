@@ -300,7 +300,7 @@ function App() {
   const displayInputs = useMemo(() => {
     return (
       <div className="flex h-screen">
-        <div className="m-auto p-8 rounded grid grid-cols-1 gap-2 text-center bg-slate-50 w-3/4 md:w-96">
+        <div className="m-auto p-8 rounded grid grid-cols-1 gap-2 text-center bg-slate-50 w-3/4 md:w-128">
           {resultError && <p>Error: {resultError}</p>}
           {navigator.geolocation && (
             <>
@@ -332,7 +332,7 @@ function App() {
   const displayResults = useMemo(() => {
     return (
       <div className="flex-1">
-        <div className="flex flex-col mx-4 md:mx-auto md:w-3/4 gap-4 my-4">
+        <div className="flex flex-col mx-1 sm:mx-auto sm:w-1/2 gap-4 my-4">
           {results?.map((r, i) => (
             <Result suitableTime={r} key={i} />
           ))}
@@ -355,10 +355,10 @@ function App() {
         <img
           src="logo64.png"
           alt=""
-          className="cursor-pointer opacity-80"
+          className="cursor-pointer opacity-80 my-2"
           onClick={resetClick}
         />
-        <h1 className="text-gray-900">When can I have a BBQ?</h1>
+        <h1 className="text-gray-900 font-semibold">When can I have a BBQ?</h1>
       </div>
       {(geolocationPosition && !resultError && displayResults) || displayInputs}
     </div>

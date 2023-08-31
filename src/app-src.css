@@ -5,7 +5,10 @@
     @apply text-2xl;
   }
   h2 {
-    @apply text-2xl;
+    @apply text-2xl font-semibold;
+  }
+  h3 {
+    @apply text-xl;
   }
   body {
     @apply bg-slate-600 bg-fixed bg-center bg-cover bg-no-repeat;
