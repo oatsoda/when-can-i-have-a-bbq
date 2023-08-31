@@ -282,8 +282,7 @@ function App() {
 
         if (
           currentGroup &&
-          (currentGroup.dataIndexes.length >= settings.minHours || // Ignore if there aren't enough hours
-            currentGroup.dataIndexes[0] !== suitableHours[0])
+          currentGroup.dataIndexes.length >= settings.minHours // Ignore if there aren't enough hours
         ) {
           addSuitableTime(currentGroup);
         }
