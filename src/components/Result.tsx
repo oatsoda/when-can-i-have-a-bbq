@@ -45,7 +45,7 @@ export function Result({
   const now = useRef(new Date());
 
   return (
-    <div className="grid grid-flow-col rounded bg-orange-200 bg-opacity-80 px-3 py-2 gap-2">
+    <div className="grid grid-flow-col grid-cols-2 rounded bg-orange-200 bg-opacity-80 px-3 py-2 gap-2">
       <div className="row-span-2">
         <h2 className="align-top">
           {suitableTime.perfect && <i className="fa-solid fa-star mr-2"></i>}
