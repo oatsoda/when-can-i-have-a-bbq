@@ -58,7 +58,7 @@ export type Location = {
   longitude: number;
 };
 
-type Settings = {
+export type Settings = {
   excludeNight: boolean;
   excludeInclementWeather: boolean;
   minTemperature: number;
@@ -401,7 +401,7 @@ function App() {
       <div className="flex-1">
         <div className="flex flex-col mx-1 sm:mx-auto sm:w-1/2 gap-4 my-4">
           {results?.map((r, i) => (
-            <Result suitableTime={r} key={i} />
+            <Result suitableTime={r} settings={defaultSettings} key={i} />
           ))}
           {results?.length === 0 && (
             <div className="flex flex-col rounded bg-orange-200 px-3 py-2 gap-2">
