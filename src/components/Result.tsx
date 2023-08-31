@@ -21,9 +21,9 @@ export function Result({ suitableTime }: { suitableTime: SuitableTime }) {
   const now = useRef(new Date());
 
   return (
-    <div className="grid grid-cols-2 rounded bg-orange-200 bg-opacity-80 px-3 py-2 gap-2">
-      <div>
-        <h2>
+    <div className="grid grid-flow-col rounded bg-orange-200 bg-opacity-80 px-3 py-2 gap-2">
+      <div className="row-span-2">
+        <h2 className="align-top">
           {suitableTime.perfect && <i className="fa-solid fa-star mr-2"></i>}
           {formatDate(suitableTime.timeFrom, now.current)}{" "}
         </h2>
@@ -34,29 +34,29 @@ export function Result({ suitableTime }: { suitableTime: SuitableTime }) {
           </small>
         </h3>
       </div>
-      <div>
-        <div className="pt-1">
-          <i className={tempIndicator()} title="Temperature"></i>{" "}
-          {Math.round(suitableTime.avg_temperature_2m)}℃{" "}
-          <i className={weatherIndicator()} title="Predominant weather"></i>
+
+      <div className="text-lg">
+        <i className={tempIndicator()} title="Temperature"></i>{" "}
+        {Math.round(suitableTime.avg_temperature_2m)}℃{" "}
+        <i className={weatherIndicator()} title="Predominant weather"></i>
+      </div>
+
+      <div className="flex flex-row gap-2 text-slate-600">
+        <div>
+          <i
+            className="fa-solid fa-umbrella"
+            title="Percentage chance of precipitation"
+          ></i>{" "}
+          {Math.round(suitableTime.avg_precipitation_probability)}%
         </div>
-        <div className="flex flex-row mt-1 gap-2 text-sm text-slate-600">
-          <div>
-            <i
-              className="fa-solid fa-umbrella"
-              title="Percentage chance of precipitation"
-            ></i>{" "}
-            {Math.round(suitableTime.avg_precipitation_probability)}%
-          </div>
-          <div>
-            <i
-              className="fa-solid fa-cloud-sun"
-              title="Percentage cloudcover"
-            ></i>{" "}
-            {Math.round(suitableTime.avg_cloudcover)}%
-          </div>
-          <div>UV: {suitableTime.max_uv_index}</div>
+        <div>
+          <i
+            className="fa-solid fa-cloud-sun"
+            title="Percentage cloudcover"
+          ></i>{" "}
+          {Math.round(suitableTime.avg_cloudcover)}%
         </div>
+        <div>UV: {suitableTime.max_uv_index}</div>
       </div>
     </div>
   );
