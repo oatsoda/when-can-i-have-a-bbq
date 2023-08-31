@@ -1,6 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Result } from "./components/Result";
 import { LocationTypeahead } from "./components/LocationTypeahead";
+import {
+  hourIsInPast,
+  hoursBetween,
+  millisecondsInHours,
+} from "./dateFunctions";
 
 // https://open-meteo.com/en/docs?#latitude=51.1438656&longitude=-0.9911955&hourly=temperature_2m,precipitation_probability,precipitation,cloudcover,cloudcover_low,cloudcover_mid,cloudcover_high,uv_index,is_day,weathercode&windspeed_unit=mph&forecast_days=14
 
@@ -139,18 +144,13 @@ function App() {
           return;
         }
 
-        const millisecondsInHours = 60 * 60 * 1000;
-        function hoursBetween(start: Date, end: Date): number {
-          return (end.valueOf() - start.valueOf()) / millisecondsInHours;
-        }
-
         // 1. Remove any unsuitable weather
 
         const suitableHours: number[] = [];
         const now = new Date();
         for (let hour = 0; hour < totalHours; hour++) {
           const thisDate = new Date(data.time[hour]);
-          if (hoursBetween(now, thisDate) <= 0) {
+          if (hourIsInPast(now, thisDate)) {
             // Exclude hours in the past
             continue;
           }

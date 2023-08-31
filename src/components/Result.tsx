@@ -1,5 +1,6 @@
 import { useCallback, useRef } from "react";
 import { SuitableTime } from "../App";
+import { formatDate, formatTimes } from "../dateFunctions";
 
 export function Result({ suitableTime }: { suitableTime: SuitableTime }) {
   const tempIndicator = useCallback(() => {
@@ -19,42 +20,12 @@ export function Result({ suitableTime }: { suitableTime: SuitableTime }) {
 
   const now = useRef(new Date());
 
-  // TODO: Move
-  const formatDate = useCallback((date: Date) => {
-    var dayOfMonth = date.getDate();
-    let formatted = `${days[date.getDay()]} ${dayOfMonth}${nthNumber(
-      dayOfMonth
-    )}`;
-    if (now.current.getMonth() !== date.getMonth()) {
-      formatted += ` ${months[date.getMonth()]}`;
-    }
-    if (now.current.getFullYear() !== date.getFullYear()) {
-      formatted += ` ${date.getFullYear()}`;
-    }
-    return formatted;
-  }, []);
-
-  const formatTime = useCallback((date: Date) => {
-    const hour = date.getHours();
-    if (hour === 0) return "Midnight";
-    if (hour === 12) return "Noon";
-    if (hour < 12) return `${hour}am`;
-    return `${hour - 12}pm`;
-  }, []);
-
-  const formatTimes = useCallback(
-    (from: Date, to: Date) => {
-      return `${formatTime(from)} - ${formatTime(to)}`;
-    },
-    [formatTime]
-  );
-
   return (
     <div className="flex flex-col rounded bg-orange-200 bg-opacity-80 px-3 py-2 gap-2">
       <div>
         <h2>
           {suitableTime.perfect && <i className="fa-solid fa-star mr-2"></i>}
-          {formatDate(suitableTime.timeFrom)}{" "}
+          {formatDate(suitableTime.timeFrom, now.current)}{" "}
         </h2>
         <h3>
           {formatTimes(suitableTime.timeFrom, suitableTime.timeTo)}{" "}
@@ -88,34 +59,3 @@ export function Result({ suitableTime }: { suitableTime: SuitableTime }) {
     </div>
   );
 }
-
-const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-
-const months = [
-  "Jan",
-  "Febr",
-  "Mar",
-  "Apr",
-  "May",
-  "Jun",
-  "Jul",
-  "Aug",
-  "Sep",
-  "Oct",
-  "Nov",
-  "Dec",
-];
-
-const nthNumber = (number: number) => {
-  if (number > 3 && number < 21) return "th";
-  switch (number % 10) {
-    case 1:
-      return "st";
-    case 2:
-      return "nd";
-    case 3:
-      return "rd";
-    default:
-      return "th";
-  }
-};
