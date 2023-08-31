@@ -50,7 +50,7 @@ export const nthNumber = (number: number) => {
   }
 };
 
-const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+export const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 const months = [
   "Jan",

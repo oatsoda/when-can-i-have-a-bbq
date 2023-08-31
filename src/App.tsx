@@ -7,6 +7,8 @@ import {
   defaultSettings,
   interpretWeather,
 } from "./weather/interpretWeather";
+import { ResultRow } from "./components/ResultRow";
+import { SettingsInput } from "./components/Settings";
 
 export type Location = {
   latitude: number;
@@ -128,14 +130,19 @@ function App() {
     return (
       <div className="flex-1">
         <div className="flex flex-col mx-1 sm:mx-auto md:w-1/2 gap-4 my-4">
+          {/* <ResultRow>
+            <SettingsInput settings={settings} onSettingsChanged={(s) => {}} />
+          </ResultRow> */}
           {results?.map((r, i) => (
-            <Result suitableTime={r} settings={settings} key={i} />
+            <ResultRow>
+              <Result suitableTime={r} settings={settings} key={i} />
+            </ResultRow>
           ))}
           {results?.length === 0 && (
-            <div className="flex flex-col rounded bg-orange-200 px-3 py-2 gap-2">
+            <ResultRow>
               Sorry, but there are no good times to have a BBQ in the next 14
               days for your chosen location.
-            </div>
+            </ResultRow>
           )}
         </div>
       </div>
