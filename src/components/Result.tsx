@@ -53,7 +53,7 @@ export function Result({
         </h2>
         <h3>
           {formatTimes(suitableTime.timeFrom, suitableTime.timeTo)}{" "}
-          <small className="hidden md:inline text-xs text-slate-600">
+          <small className="hidden sm:inline text-xs text-slate-600">
             ({suitableTime.hours} hours)
           </small>
         </h3>

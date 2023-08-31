@@ -891,6 +891,10 @@ body {
     margin-right: auto;
   }
 
+  .sm\:inline {
+    display: inline;
+  }
+
   .sm\:w-1\/2 {
     width: 50%;
   }
@@ -903,5 +907,9 @@ body {
 
   .md\:w-128 {
     width: 32rem;
+  }
+
+  .md\:w-1\/2 {
+    width: 50%;
   }
 }
