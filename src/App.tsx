@@ -53,6 +53,30 @@ export type Location = {
   longitude: number;
 };
 
+type Settings = {
+  excludeNight: boolean;
+  excludeInclementWeather: boolean;
+  minTemperature: number;
+  maxPrecipitationChance: number;
+  maxPrecipitationAmount: number;
+  maxCloudcover: number;
+  minHours: number;
+  daysOfTheWeek: number[];
+  hoursOfTheDay: number[];
+};
+
+const defaultSettings: Settings = {
+  excludeNight: true,
+  excludeInclementWeather: true,
+  minTemperature: 16,
+  maxPrecipitationChance: 30,
+  maxPrecipitationAmount: 0.1,
+  maxCloudcover: 50,
+  minHours: 2,
+  daysOfTheWeek: [0, 6],
+  hoursOfTheDay: [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22],
+};
+
 function App() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -106,6 +130,7 @@ function App() {
       async function convertWeatherToResults() {
         console.warn("Weather Data:", weatherResponse);
 
+        const settings = defaultSettings;
         const data = weatherResponse.hourly;
         const totalHours = data.time.length;
 
@@ -124,25 +149,35 @@ function App() {
         const suitableHours: number[] = [];
         const now = new Date();
         for (let hour = 0; hour < totalHours; hour++) {
-          if (hoursBetween(now, new Date(data.time[hour])) <= 0) {
+          const thisDate = new Date(data.time[hour]);
+          if (hoursBetween(now, thisDate) <= 0) {
+            // Exclude hours in the past
+            continue;
+          }
+          if (!settings.daysOfTheWeek.includes(thisDate.getDay())) {
+            continue;
+          }
+          if (!settings.hoursOfTheDay.includes(thisDate.getHours())) {
             continue;
           }
           console.log(data.time[hour]);
-          if (data.is_day[hour] === 0) {
+          if (settings.excludeNight && data.is_day[hour] === 0) {
             console.log("Is nighttime");
             continue;
           }
-          if (data.weathercode[hour] > 3) {
+          if (settings.excludeInclementWeather && data.weathercode[hour] > 3) {
             console.log("Has inclement weather", data.weathercode[hour]);
             continue;
           }
-          if (data.temperature_2m[hour] < 16) {
+          if (data.temperature_2m[hour] < settings.minTemperature) {
             console.log("Is too cold", data.temperature_2m[hour]);
             continue;
           }
+          // TODO: Improve this - the combinations need finessing
           if (
-            data.precipitation_probability[hour] > 30 ||
-            data.precipitation[hour] > 0.1
+            data.precipitation_probability[hour] >
+              settings.maxPrecipitationChance ||
+            data.precipitation[hour] > settings.maxPrecipitationAmount
           ) {
             console.log(
               "Too much precip",
@@ -151,7 +186,7 @@ function App() {
             );
             continue;
           }
-          if (data.cloudcover[hour] >= 50) {
+          if (data.cloudcover[hour] >= settings.maxCloudcover) {
             console.log("Too much cloud cover", data.cloudcover[hour]);
             continue;
           }
@@ -222,8 +257,8 @@ function App() {
             var time = new Date(data.time[hour] + "Z");
             // If contiguous hours has ended
             if (hoursBetween(currentGroup.timeTo, time) > 1) {
-              // Ignore single hours
-              if (currentGroup.dataIndexes.length > 1) {
+              // Ignore if there aren't enough hours
+              if (currentGroup.dataIndexes.length >= settings.minHours) {
                 addSuitableTime(currentGroup);
               }
 
@@ -247,7 +282,7 @@ function App() {
 
         if (
           currentGroup &&
-          (currentGroup.dataIndexes.length > 1 ||
+          (currentGroup.dataIndexes.length >= settings.minHours || // Ignore if there aren't enough hours
             currentGroup.dataIndexes[0] !== suitableHours[0])
         ) {
           addSuitableTime(currentGroup);
@@ -260,6 +295,7 @@ function App() {
          */
 
         setResults(suitableTimes);
+        setIsLoading(false);
       }
 
       void convertWeatherToResults();
@@ -285,12 +321,14 @@ function App() {
           await response.json();
 
         if (!response.ok || (data as WeatherError).error) {
+          setIsLoading(false);
           setResultError(
             `Failed to determine weather for your location: ${
               response.statusText
             } ${(data as WeatherError).reason}`
           );
         } else if (!data) {
+          setIsLoading(false);
           setResultError(
             `Unexpected error trying to determine weather for your location.`
           );
@@ -298,11 +336,11 @@ function App() {
           calculateResults(data as WeatherResponse);
         }
       } catch (error) {
+        setIsLoading(false);
         setResultError(
           `Unable to determine weather for your location: ${error}`
         );
       }
-      setIsLoading(false);
     }
 
     void getWeather();
