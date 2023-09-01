@@ -33,9 +33,31 @@ export function SettingsInput({
     [settings, updateSettings]
   );
 
+  const minHoursChanged = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      const hours = parseInt(e.target.value);
+      if (hours === settings.minHours) {
+        return;
+      }
+      updateSettings(settings, (s) => (s.minHours = hours));
+    },
+    [settings, updateSettings]
+  );
+
   return (
     <>
       <h3>Settings</h3>
+      <div className="mt-2">
+        Continuous hours required
+        <input
+          className="ml-2 rounded border-2"
+          type="number"
+          min={1}
+          max={24}
+          value={settings.minHours}
+          onChange={minHoursChanged}
+        />
+      </div>
       <div className="grid grid-flow-cols mt-2">
         <div className="col-span-7 pb-1">Include days</div>
         {[0, 1, 2, 3, 4, 5, 6].map((d) => (
