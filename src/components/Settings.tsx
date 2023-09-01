@@ -9,7 +9,7 @@ export function SettingsInput({
   onSettingsChanged: (settings: Settings) => void;
 }) {
   return (
-    <div>
+    <>
       <div>
         <h3>Settings</h3>
       </div>
@@ -17,6 +17,6 @@ export function SettingsInput({
       {[0, 1, 2, 3, 4, 5, 6].map((d) => (
         <div>{days[d]}</div>
       ))}
-    </div>
+    </>
   );
 }

@@ -134,7 +134,7 @@ function App() {
             <SettingsInput settings={settings} onSettingsChanged={(s) => {}} />
           </ResultRow> */}
           {results?.map((r, i) => (
-            <ResultRow cols={2}>
+            <ResultRow>
               <Result suitableTime={r} settings={settings} key={i} />
             </ResultRow>
           ))}
