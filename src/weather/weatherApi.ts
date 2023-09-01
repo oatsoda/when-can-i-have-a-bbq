@@ -17,7 +17,6 @@ export type WeatherResponse = {
     weathercode: number[]; // Weather condition as a numeric code. 0 = Clear Sky, 1, 2, 3 = Mainly clear, partly cloudy, and overcast. 45+ indicate less clement weather.
     uv_index: number[];
     is_day: number[]; // 1 if the current time step has daylight, 0 at night.
-    // TODO: Add windspeed and windgusts
   };
 };
 

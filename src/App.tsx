@@ -17,7 +17,6 @@ export type Location = {
 };
 
 function App() {
-  // TODO: Move results to separate URL
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const [geoPosition, setGeoPosition] = useState<Location | null>(null);

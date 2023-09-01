@@ -42,7 +42,6 @@ export function LocationTypeahead({
 
     async function FindLocations() {
       try {
-        // TODO: this is far too heavily rate limited ()
         const response = await fetch(
           `https://geocode.maps.co/search?q=${searchText}`
         );

@@ -89,7 +89,6 @@ export function interpretWeather(
       console.debug("Is too cold", data.temperature_2m[hour]);
       continue;
     }
-    // TODO: Improve this - the combinations need finessing
     if (
       data.precipitation_probability[hour] > settings.maxPrecipitationChance ||
       data.precipitation[hour] > settings.maxPrecipitationAmount
@@ -200,12 +199,6 @@ export function interpretWeather(
   ) {
     addSuitableTime(currentGroup);
   }
-
-  /*
-          TODO
-          Filter our cooler temperatures if there are better ones (i.e. only LOW scores)
-          Warn on high UV Index
-         */
 
   return suitableTimes;
 }
