@@ -1,8 +1,4 @@
-import {
-  hourIsInPast,
-  hoursBetween,
-  millisecondsInHours,
-} from "../core/dateFunctions";
+import { addHours, hourIsInPast, hoursBetween } from "../core/dateFunctions";
 import { WeatherResponse } from "./weatherApi";
 
 export type Settings = {
@@ -26,7 +22,7 @@ export const defaultSettings: Settings = {
   maxCloudcover: 50,
   minHours: 2,
   daysOfTheWeek: [0, 6],
-  hoursOfTheDay: [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22],
+  hoursOfTheDay: [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23],
 };
 
 type TimeGroup = {
@@ -65,7 +61,10 @@ export function interpretWeather(
   const suitableHours: number[] = [];
   const now = new Date();
   for (let hour = 0; hour < totalHours; hour++) {
-    const thisDate = new Date(data.time[hour]);
+    // Data from the API is for the *previous* hours weather, so 15:00 is 14:00-15:00
+    // so we interpret user wanting to include 14:00 as the data from 15:00
+    const thisDate = addHours(new Date(data.time[hour] + "Z"), -1);
+
     if (hourIsInPast(now, thisDate)) {
       // Exclude hours in the past
       continue;
@@ -73,6 +72,7 @@ export function interpretWeather(
     if (!settings.daysOfTheWeek.includes(thisDate.getDay())) {
       continue;
     }
+
     if (!settings.hoursOfTheDay.includes(thisDate.getHours())) {
       continue;
     }
@@ -118,12 +118,12 @@ export function interpretWeather(
   // 2. Group suitable times into contiguous periods
 
   function addSuitableTime(group: TimeGroup) {
-    // The forecast time is for the "previous hour"
-    const from = group.timeFrom;
-    from.setTime(from.getTime() - millisecondsInHours);
+    // Add one hour on to the end, as a single hour for 14:00 would mean 14:00-15:00
+    // Note that the times have already been adjusted from the API.
+    const to = addHours(group.timeTo, 1);
     const suitableTime: SuitableTime = {
-      timeFrom: from,
-      timeTo: group.timeTo,
+      timeFrom: group.timeFrom,
+      timeTo: to,
       hours: group.dataIndexes.length,
       perfect: false,
       avg_temperature_2m: 0,
@@ -160,28 +160,31 @@ export function interpretWeather(
   let currentGroup: TimeGroup | null = null;
 
   for (var hour of suitableHours) {
+    // Data from the API is for the *previous* hours weather, so 15:00 is 14:00-15:00
+    // so we interpret user wanting to include 14:00 as the data from 15:00
+    const thisDate = addHours(new Date(data.time[hour] + "Z"), -1);
+
     if (!currentGroup) {
       currentGroup = {
-        timeFrom: new Date(data.time[hour] + "Z"),
-        timeTo: new Date(data.time[hour] + "Z"),
+        timeFrom: thisDate,
+        timeTo: thisDate,
         dataIndexes: [hour],
       };
     } else {
-      var time = new Date(data.time[hour] + "Z");
       // If contiguous hours has ended
-      if (hoursBetween(currentGroup.timeTo, time) > 1) {
+      if (hoursBetween(currentGroup.timeTo, thisDate) > 1) {
         // Ignore if there aren't enough hours
         if (currentGroup.dataIndexes.length >= settings.minHours) {
           addSuitableTime(currentGroup);
         }
 
         currentGroup = {
-          timeFrom: new Date(data.time[hour] + "Z"),
-          timeTo: new Date(data.time[hour] + "Z"),
+          timeFrom: thisDate,
+          timeTo: thisDate,
           dataIndexes: [hour],
         };
       } else {
-        currentGroup.timeTo = new Date(data.time[hour] + "Z");
+        currentGroup.timeTo = thisDate;
         currentGroup.dataIndexes.push(hour);
       }
     }

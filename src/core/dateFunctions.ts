@@ -1,4 +1,8 @@
-export const millisecondsInHours = 60 * 60 * 1000;
+const millisecondsInHours = 60 * 60 * 1000;
+
+export function addHours(target: Date, hours: number) {
+  return new Date(target.getTime() + millisecondsInHours * hours);
+}
 
 export function hoursBetween(start: Date, end: Date): number {
   return (end.valueOf() - start.valueOf()) / millisecondsInHours;
