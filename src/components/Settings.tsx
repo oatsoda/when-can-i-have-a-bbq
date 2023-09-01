@@ -9,7 +9,7 @@ export function SettingsInput({
   onSettingsChanged: (settings: Settings) => void;
 }) {
   return (
-    <div className="col-span-2">
+    <div>
       <div>
         <h3>Settings</h3>
       </div>
