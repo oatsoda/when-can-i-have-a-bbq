@@ -8,7 +8,7 @@ import {
   interpretWeather,
 } from "./weather/interpretWeather";
 import { ResultRow } from "./components/ResultRow";
-import { SettingsInput } from "./components/Settings";
+// import { SettingsInput } from "./components/Settings";
 
 export type Location = {
   latitude: number;
