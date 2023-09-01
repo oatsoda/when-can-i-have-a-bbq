@@ -6,7 +6,6 @@ import {
 import { WeatherResponse } from "./weatherApi";
 
 export type Settings = {
-  daysAhead: 7 | 10 | 14;
   excludeNight: boolean;
   excludeInclementWeather: boolean;
   minTemperature: number;
@@ -19,7 +18,6 @@ export type Settings = {
 };
 
 export const defaultSettings: Settings = {
-  daysAhead: 14,
   excludeNight: true,
   excludeInclementWeather: true,
   minTemperature: 16,
@@ -53,7 +51,7 @@ export function interpretWeather(
   weatherResponse: WeatherResponse,
   settings: Settings
 ): SuitableTime[] {
-  console.warn("Weather Data:", weatherResponse);
+  console.debug("Weather Data:", weatherResponse);
 
   const data = weatherResponse.hourly;
   const totalHours = data.time.length;
@@ -78,17 +76,17 @@ export function interpretWeather(
     if (!settings.hoursOfTheDay.includes(thisDate.getHours())) {
       continue;
     }
-    console.log(data.time[hour]);
+    console.debug(data.time[hour]);
     if (settings.excludeNight && data.is_day[hour] === 0) {
-      console.log("Is nighttime");
+      console.debug("Is nighttime");
       continue;
     }
     if (settings.excludeInclementWeather && data.weathercode[hour] > 3) {
-      console.log("Has inclement weather", data.weathercode[hour]);
+      console.debug("Has inclement weather", data.weathercode[hour]);
       continue;
     }
     if (data.temperature_2m[hour] < settings.minTemperature) {
-      console.log("Is too cold", data.temperature_2m[hour]);
+      console.debug("Is too cold", data.temperature_2m[hour]);
       continue;
     }
     // TODO: Improve this - the combinations need finessing
@@ -96,7 +94,7 @@ export function interpretWeather(
       data.precipitation_probability[hour] > settings.maxPrecipitationChance ||
       data.precipitation[hour] > settings.maxPrecipitationAmount
     ) {
-      console.log(
+      console.debug(
         "Too much precip",
         data.precipitation_probability[hour],
         data.precipitation[hour]
@@ -104,15 +102,15 @@ export function interpretWeather(
       continue;
     }
     if (data.cloudcover[hour] >= settings.maxCloudcover) {
-      console.log("Too much cloud cover", data.cloudcover[hour]);
+      console.debug("Too much cloud cover", data.cloudcover[hour]);
       continue;
     }
 
-    console.log("Suitable!");
+    console.debug("Suitable!");
     suitableHours.push(hour);
   }
 
-  console.log("------- SUITABLE HOURS ----------", suitableHours);
+  console.debug("------- SUITABLE HOURS ----------", suitableHours);
 
   if (suitableHours.length === 0) {
     return [];
@@ -188,7 +186,7 @@ export function interpretWeather(
         currentGroup.dataIndexes.push(hour);
       }
     }
-    console.log(
+    console.debug(
       "CURRENT",
       currentGroup.dataIndexes.length.toString(),
       currentGroup.timeFrom.toString(),

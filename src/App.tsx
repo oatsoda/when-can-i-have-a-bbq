@@ -1,35 +1,39 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Result } from "./components/Result";
 import { LocationTypeahead } from "./components/LocationTypeahead";
-import { getWeather } from "./weather/weatherApi";
+import { WeatherResponse, getWeather } from "./weather/weatherApi";
 import {
+  Settings,
   SuitableTime,
   defaultSettings,
   interpretWeather,
 } from "./weather/interpretWeather";
 import { ResultRow } from "./components/ResultRow";
-// import { SettingsInput } from "./components/Settings";
+import { SettingsInput } from "./components/Settings";
 
 export type Location = {
   latitude: number;
   longitude: number;
 };
 
-const settings = defaultSettings;
-
 function App() {
   // TODO: Move results to separate URL
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const [geoPosition, setGeoPosition] = useState<Location | null>(null);
+  const [weatherResponse, setWeatherResponse] =
+    useState<WeatherResponse | null>(null);
   const [results, setResults] = useState<SuitableTime[] | null>(null);
 
   const [error, setError] = useState<string | null>(null);
 
+  const [settings, setSettings] = useState<Settings>(defaultSettings);
+
   const reset = useCallback(() => {
     setGeoPosition(null);
-    setError(null);
+    setWeatherResponse(null);
     setResults(null);
+    setError(null);
     setIsLoading(false);
   }, []);
 
@@ -59,26 +63,38 @@ function App() {
   );
 
   /*******************************************************/
-  /* FETCH WEATHER + CALCULATE RESULTS */
+  /* FETCH WEATHER */
 
   useEffect(() => {
     if (!geoPosition) {
       return;
     }
 
-    async function getWeatherAndProcess(longitude: number, latitude: number) {
-      var response = await getWeather(longitude, latitude, settings.daysAhead);
+    async function getWeatherResponse(longitude: number, latitude: number) {
+      var response = await getWeather(longitude, latitude, 14);
       if (response.isSuccess) {
-        var suitableTimes = interpretWeather(response.data, settings);
-        setResults(suitableTimes);
+        setWeatherResponse(response.data);
       } else {
         setError(response.error);
       }
-      setIsLoading(false);
     }
 
-    void getWeatherAndProcess(geoPosition.longitude, geoPosition.latitude);
+    void getWeatherResponse(geoPosition.longitude, geoPosition.latitude);
   }, [geoPosition]);
+
+  /*******************************************************/
+  /* CALCULATE RESULTS */
+
+  useEffect(() => {
+    if (!weatherResponse) {
+      return;
+    }
+
+    var suitableTimes = interpretWeather(weatherResponse, settings);
+    setResults(suitableTimes);
+
+    setIsLoading(false);
+  }, [weatherResponse, settings]);
 
   /*******************************************************/
   /* DISPLAY INPUT */
@@ -130,12 +146,15 @@ function App() {
     return (
       <div className="flex-1">
         <div className="flex flex-col mx-1 sm:mx-auto md:w-1/2 gap-4 my-4">
-          {/* <ResultRow>
-            <SettingsInput settings={settings} onSettingsChanged={(s) => {}} />
-          </ResultRow> */}
+          <ResultRow>
+            <SettingsInput
+              settings={settings}
+              onSettingsChanged={setSettings}
+            />
+          </ResultRow>
           {results?.map((r, i) => (
-            <ResultRow>
-              <Result suitableTime={r} settings={settings} key={i} />
+            <ResultRow key={i}>
+              <Result suitableTime={r} settings={settings} />
             </ResultRow>
           ))}
           {results?.length === 0 && (
@@ -147,7 +166,7 @@ function App() {
         </div>
       </div>
     );
-  }, [results]);
+  }, [results, settings]);
 
   /*******************************************************/
   /* RENDER */
