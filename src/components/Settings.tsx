@@ -1,6 +1,10 @@
 import { ChangeEvent, useCallback } from "react";
 import { days } from "../core/dateFunctions";
-import { Settings } from "../weather/interpretWeather";
+import {
+  PeriodOfDay,
+  Settings,
+  periodsOfDay,
+} from "../weather/interpretWeather";
 
 export function SettingsInput({
   settings,
@@ -46,6 +50,23 @@ export function SettingsInput({
     [settings, updateSettings]
   );
 
+  const periodsChanged = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      const period = e.target.value as PeriodOfDay;
+      const checked = e.target.checked;
+      const currentIndex = settings.periodsOfTheDay.indexOf(period);
+
+      if (checked && currentIndex < 0) {
+        updateSettings(settings, (s) => s.periodsOfTheDay.push(period));
+      } else if (!checked && currentIndex >= 0) {
+        updateSettings(settings, (s) =>
+          s.periodsOfTheDay.splice(currentIndex, 1)
+        );
+      }
+    },
+    [settings, updateSettings]
+  );
+
   const nightChanged = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
       const checked = e.target.checked;
@@ -74,14 +95,6 @@ export function SettingsInput({
           onChange={minHoursChanged}
         />
       </div>
-      <div className="mt-2">
-        <input
-          type="checkbox"
-          checked={!settings.excludeNight}
-          onChange={nightChanged}
-        />{" "}
-        Include night time
-      </div>
       <div className="grid grid-flow-cols mt-2">
         <div className="col-span-7 pb-1">Days</div>
         {[0, 1, 2, 3, 4, 5, 6].map((d) => (
@@ -95,6 +108,31 @@ export function SettingsInput({
             {days[d]}
           </div>
         ))}
+      </div>
+      <div className="grid grid-flow-cols mt-2">
+        <div className="col-span-7 pb-1">Time</div>
+        {periodsOfDay.map((p) => (
+          <div key={p}>
+            <input
+              type="checkbox"
+              value={p}
+              checked={settings.periodsOfTheDay.includes(p)}
+              onChange={periodsChanged}
+            />{" "}
+            {p}
+          </div>
+        ))}
+      </div>
+      <div className="grid grid-flow-cols mt-2">
+        <div className="col-span-7 pb-1">Day / Night</div>
+        <div>
+          <input
+            type="checkbox"
+            checked={!settings.excludeNight}
+            onChange={nightChanged}
+          />{" "}
+          Include darkness
+        </div>
       </div>
     </>
   );

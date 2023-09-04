@@ -10,8 +10,24 @@ export type Settings = {
   maxCloudcover: number;
   minHours: number;
   daysOfTheWeek: number[];
-  hoursOfTheDay: number[];
+  periodsOfTheDay: PeriodOfDay[];
 };
+
+export type PeriodOfDay = "Small Hours" | "Morning" | "Afternoon" | "Evening";
+
+export const periodsOfDay: PeriodOfDay[] = [
+  "Small Hours",
+  "Morning",
+  "Afternoon",
+  "Evening",
+];
+
+export const hoursOfPeriods = new Map<PeriodOfDay, number[]>([
+  [periodsOfDay[0], [0, 1, 2, 3, 4, 5, 6, 7, 8]],
+  [periodsOfDay[1], [9, 10, 11]],
+  [periodsOfDay[2], [12, 13, 14, 15, 16, 17]],
+  [periodsOfDay[3], [18, 19, 20, 21, 22, 23]],
+]);
 
 export const defaultSettings: Settings = {
   excludeNight: true,
@@ -22,7 +38,7 @@ export const defaultSettings: Settings = {
   maxCloudcover: 50,
   minHours: 2,
   daysOfTheWeek: [0, 6],
-  hoursOfTheDay: [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23],
+  periodsOfTheDay: ["Afternoon", "Evening"],
 };
 
 type TimeGroup = {
@@ -60,6 +76,12 @@ export function interpretWeather(
 
   const suitableHours: number[] = [];
   const now = new Date();
+
+  let hours: number[] = [];
+  for (var period of settings.periodsOfTheDay) {
+    hours.push(...hoursOfPeriods.get(period)!);
+  }
+
   for (let hour = 0; hour < totalHours; hour++) {
     // Data from the API is for the *previous* hours weather, so 15:00 is 14:00-15:00
     // so we interpret user wanting to include 14:00 as the data from 15:00
@@ -73,7 +95,7 @@ export function interpretWeather(
       continue;
     }
 
-    if (!settings.hoursOfTheDay.includes(thisDate.getHours())) {
+    if (!hours.includes(thisDate.getHours())) {
       continue;
     }
     console.debug(data.time[hour]);
