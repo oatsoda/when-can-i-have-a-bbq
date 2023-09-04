@@ -20,11 +20,11 @@ export function SettingsInput({
 
   const minHoursChanged = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
-      const hours = parseInt(e.target.value);
-      if (hours === settings.minHours) {
-        return;
+      const house = parseInt(e.target.value);
+
+      if (house !== settings.minHours) {
+        updateSettings(settings, (s) => (s.minHours = house));
       }
-      updateSettings(settings, (s) => (s.minHours = hours));
     },
     [settings, updateSettings]
   );
@@ -33,12 +33,14 @@ export function SettingsInput({
     (e: ChangeEvent<HTMLInputElement>) => {
       const day = parseInt(e.target.value);
       const checked = e.target.checked;
+      const currentIndex = settings.daysOfTheWeek.indexOf(day);
 
-      const index = settings.daysOfTheWeek.indexOf(day);
-      if (checked && index < 0) {
+      if (checked && currentIndex < 0) {
         updateSettings(settings, (s) => s.daysOfTheWeek.push(day));
-      } else if (!checked && index >= 0) {
-        updateSettings(settings, (s) => s.daysOfTheWeek.splice(index, 1));
+      } else if (!checked && currentIndex >= 0) {
+        updateSettings(settings, (s) =>
+          s.daysOfTheWeek.splice(currentIndex, 1)
+        );
       }
     },
     [settings, updateSettings]
@@ -47,8 +49,8 @@ export function SettingsInput({
   const nightChanged = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
       const checked = e.target.checked;
-
       const currentIncludeNight = !settings.excludeNight;
+
       if (checked && !currentIncludeNight) {
         updateSettings(settings, (s) => (s.excludeNight = false));
       } else if (!checked && currentIncludeNight) {
