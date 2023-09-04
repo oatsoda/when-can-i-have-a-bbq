@@ -5,6 +5,7 @@ import {
   Settings,
   periodsOfDay,
 } from "../weather/interpretWeather";
+import { Toggle } from "./Toggle";
 
 export function SettingsInput({
   settings,
@@ -99,13 +100,12 @@ export function SettingsInput({
         <div className="col-span-7 pb-1">Days</div>
         {[0, 1, 2, 3, 4, 5, 6].map((d) => (
           <div key={d}>
-            <input
-              type="checkbox"
+            <Toggle
+              text={days[d]}
               value={d}
               checked={settings.daysOfTheWeek.includes(d)}
               onChange={daysOfWeekChanged}
-            />{" "}
-            {days[d]}
+            />
           </div>
         ))}
       </div>
@@ -113,25 +113,23 @@ export function SettingsInput({
         <div className="col-span-7 pb-1">Time</div>
         {periodsOfDay.map((p) => (
           <div key={p}>
-            <input
-              type="checkbox"
+            <Toggle
+              text={p}
               value={p}
               checked={settings.periodsOfTheDay.includes(p)}
               onChange={periodsChanged}
-            />{" "}
-            {p}
+            />
           </div>
         ))}
       </div>
       <div className="grid grid-flow-cols mt-2">
         <div className="col-span-7 pb-1">Day / Night</div>
         <div>
-          <input
-            type="checkbox"
+          <Toggle
+            text="Include darkness"
             checked={!settings.excludeNight}
             onChange={nightChanged}
-          />{" "}
-          Include darkness
+          />
         </div>
       </div>
     </>
