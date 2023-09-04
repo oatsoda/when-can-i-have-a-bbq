@@ -18,6 +18,17 @@ export function SettingsInput({
     [onSettingsChanged]
   );
 
+  const minHoursChanged = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      const hours = parseInt(e.target.value);
+      if (hours === settings.minHours) {
+        return;
+      }
+      updateSettings(settings, (s) => (s.minHours = hours));
+    },
+    [settings, updateSettings]
+  );
+
   const daysOfWeekChanged = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
       const day = parseInt(e.target.value);
@@ -33,13 +44,16 @@ export function SettingsInput({
     [settings, updateSettings]
   );
 
-  const minHoursChanged = useCallback(
+  const nightChanged = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
-      const hours = parseInt(e.target.value);
-      if (hours === settings.minHours) {
-        return;
+      const checked = e.target.checked;
+
+      const currentIncludeNight = !settings.excludeNight;
+      if (checked && !currentIncludeNight) {
+        updateSettings(settings, (s) => (s.excludeNight = false));
+      } else if (!checked && currentIncludeNight) {
+        updateSettings(settings, (s) => (s.excludeNight = true));
       }
-      updateSettings(settings, (s) => (s.minHours = hours));
     },
     [settings, updateSettings]
   );
@@ -58,8 +72,16 @@ export function SettingsInput({
           onChange={minHoursChanged}
         />
       </div>
+      <div className="mt-2">
+        <input
+          type="checkbox"
+          checked={!settings.excludeNight}
+          onChange={nightChanged}
+        />{" "}
+        Include night time
+      </div>
       <div className="grid grid-flow-cols mt-2">
-        <div className="col-span-7 pb-1">Include days</div>
+        <div className="col-span-7 pb-1">Days</div>
         {[0, 1, 2, 3, 4, 5, 6].map((d) => (
           <div key={d}>
             <input
