@@ -23,12 +23,23 @@ export function SettingsInput({
     [onSettingsChanged]
   );
 
+  const minTempChanged = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      const temp = parseInt(e.target.value);
+
+      if (temp !== settings.minTemperature) {
+        updateSettings(settings, (s) => (s.minTemperature = temp));
+      }
+    },
+    [settings, updateSettings]
+  );
+
   const minHoursChanged = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
-      const house = parseInt(e.target.value);
+      const hours = parseInt(e.target.value);
 
-      if (house !== settings.minHours) {
-        updateSettings(settings, (s) => (s.minHours = house));
+      if (hours !== settings.minHours) {
+        updateSettings(settings, (s) => (s.minHours = hours));
       }
     },
     [settings, updateSettings]
@@ -85,6 +96,18 @@ export function SettingsInput({
   return (
     <>
       <h3>Settings</h3>
+      <div className="mt-2">
+        Minimum temperature
+        <input
+          className="ml-2 rounded border-2 border-orange-200"
+          type="number"
+          min={10}
+          max={40}
+          value={settings.minTemperature}
+          onChange={minTempChanged}
+        />
+        &deg;C
+      </div>
       <div className="mt-2">
         Continuous hours required
         <input
