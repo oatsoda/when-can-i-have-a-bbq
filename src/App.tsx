@@ -124,9 +124,9 @@ function App() {
                   Use current location
                 </button>
               </div>
+              <div>or</div>
             </>
           )}
-          {navigator.geolocation && <div>or</div>}
           <div>
             <LocationTypeahead
               onLocationChosen={locationChosenClick}
