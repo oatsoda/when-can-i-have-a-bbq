@@ -88,7 +88,7 @@ export function SettingsInput({
       <div className="mt-2">
         Continuous hours required
         <input
-          className="ml-2 rounded border-2"
+          className="ml-2 rounded border-2 border-orange-200"
           type="number"
           min={1}
           max={24}
