@@ -16,6 +16,7 @@ and
 
 - Move results to different page URL?
 - Further improve visual elements
+  - Fix responsive layout for settings toggles
 - Improve algorithm -
   - It's probably a bit lenient at the moment
   - Improve the Precipitation choices
@@ -24,7 +25,7 @@ and
 - Results
   - Warn on high UV Index
 - Add knobs to allow users to tweak the results
-  - Min Temperature
+  - Cloudcover %
 - Finish implementing the location typeahead/lookup
   - Current API is messy, very verbose and heavily rate limited. Perhaps use Azure Maps wrapped in a container?
   - Loading state while the typeahead is executing
